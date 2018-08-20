@@ -1,0 +1,39 @@
+@mixin table-base {
+	width: 100%;
+	tr {
+		th {
+			margin: 0;
+			text-align: left;
+			border: 0;
+		}
+		td {
+			border: 0;
+		}
+	}
+}
+
+.table {
+	@include table-base();
+	border-spacing: 1px;
+	tr {
+		th {
+			@include font-weight("normal");
+			padding: spacing(3);
+			background-color: $table-header-bg;
+			color: yiq-contrast-color($table-header-bg);
+		}
+		td {
+			padding: spacing(3);
+		}
+		&:nth-child(even) {
+			td {
+				background-color: $table-row-bg-even;
+			}
+		}
+		&:nth-child(odd) {
+			td {
+				background-color: $table-row-bg-odd;
+			}
+		}
+	}
+}

@@ -1,0 +1,422 @@
+/**
+ * Terra Design System
+ * _navigation.scss
+ */
+
+//
+// mega menu
+
+$mega-menu-offset: calc(-1 * #{spacing(2)});
+
+.mega-menu {
+	@include type-setting(-1,'normal');
+	position: absolute;
+	top: $navbar-height;
+	left: 50%;
+	transform: translate(-50%, -20px);
+	transition: visibility 225ms ease-in-out, opacity 225ms ease-in-out, transform 225ms ease-in-out;
+	visibility: hidden;
+	opacity: 0;
+	width: 100%;
+	box-sizing: border-box;
+	&:hover {
+		visibility: visible;
+		opacity: 1;
+		transform: translate(-50%, $mega-menu-offset);
+	}
+	&__list {
+		@include list-unstyled;
+		@include depth(2);
+		@include border-radius('all','small');
+		padding: spacing(4);
+		margin-left: spacing(6);
+		margin-right: spacing(6);
+		background: #ffffff;
+		li {
+			> ul {
+				@include list-unstyled;
+				> li {
+					padding: 0;
+					> a:not(.ter-button) {
+						@include type-setting(-1,'normal');
+						color: $navbar-link-color;
+						margin: 0;
+						padding: spacing(1) 0;
+						text-decoration: none;
+						&:hover {
+							color: $navbar-link-hover;
+							text-decoration: none;
+						}
+						@include for-size(tablet-landscape-down) {
+							@include type-setting(0,'normal');
+							display: block;
+						}
+						.inverse-color & {
+							color: $navbar-inverse-link-color;
+							&:hover {
+								color: $navbar-inverse-link-hover-color;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	&__trigger {
+		&:after {
+            @include icon-base;
+            content: "\f078";
+            font-size: 75%;
+            margin-left: spacing(3);
+        }
+		&:hover {
+			~ .mega-menu {
+				visibility: visible;
+	  			opacity: 1;
+	  			transform: translate(-50%, $mega-menu-offset);
+			}
+		}
+	}
+}
+
+
+//
+// navigation bar
+
+// fix for body top-margin
+body.has-nav {
+	padding-top: $navbar-height;
+}
+
+.navbar {
+	@include z-index(9);
+	height: $navbar-height;
+	background: $navbar-bg;
+	transition: transform .5s ease;
+	position: relative;
+	top: 0;
+	display: flex;
+	justify-content: space-between;
+	width: stretch;
+	border-bottom: $navbar-border-width solid $navbar-border-color;
+	padding-left: var(--outer-margin);
+	padding-right: var(--outer-margin);
+	&.inverse-color {
+		background: $navbar-inverse-bg;
+		border-bottom: $navbar-border-width solid $navbar-inverse-border-color
+	}
+	&.is-fixed {
+		position: fixed;
+	}
+	&__toggle {
+		height: $navbar-height;
+		float: right;
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+		border: 0;
+		background: transparent;
+		@include for-size(tablet-landscape-up) {
+			display: none;
+		}
+		.line {
+			width: 25px;
+			height: 2px;
+			background-color: $navbar-menu-icon-color;
+			display: block;
+			margin: 5px auto;
+			transition: all 0.3s ease-in-out;
+		}
+		&.is-active .line:nth-child(1){
+			transform: translateY(7px);
+		}
+		&.is-active .line:nth-child(3){
+			transform: translateY(-7px);
+		}
+		&:hover{
+			cursor: pointer;
+		}
+	}
+	&__brand {
+		@include type-setting(0,'normal');
+		height: $navbar-height;
+	    display: inline-block;
+	    line-height: $navbar-height;
+	    text-decoration: none;
+	    &[href] {
+	    	color: $navbar-link-color;
+			&:hover {
+				color: $navbar-link-hover;
+				text-decoration: none;
+			}
+			.inverse-color & {
+				color: $navbar-inverse-link-color;
+				&:hover {
+					color: $navbar-inverse-link-hover-color;
+					text-decoration: none;
+				}
+			}
+	    }
+		img {
+			@include height(2);
+			padding: spacing(4) 0;
+		}
+	}
+	[class^='container'] {
+		&:after {
+			content: '';
+			display: block;
+			clear: both;
+		}
+	}
+	&__nav {
+		@include box-shadow(2);
+        position: absolute;
+        top: $navbar-height;
+        left: 0;
+        width: 100%;
+        background: $navbar-bg;
+        display: none;
+        @include for-size(tablet-landscape-down) {
+        	padding-bottom: spacing(4);
+        }
+		@include for-size(tablet-landscape-up) {
+			@include box-shadow("none");
+			display: inline-block;
+			width: initial;
+			position: static;
+        	top: unset;
+        	left: unset;
+        	display: flex !important;
+	    }
+	    .inverse-color & {
+			background: $navbar-inverse-bg;
+		}
+	}
+    &__menu {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding: spacing(4) 0;
+        margin: 0;
+        @include for-size(tablet-landscape-down) {
+        	padding-bottom: 0;
+        }
+        &--right {
+        	margin-left: auto;
+        }
+        &--left {
+        	margin-right: auto;
+        }
+    	@include for-size(tablet-landscape-up) {
+    		display: table;
+    		width: initial;
+    		padding-top: 0;
+    		padding-bottom: 0;
+    		height: $navbar-height;
+	    }
+	}
+	&__menu-item {
+		display: block;
+        width: 100%;
+        padding-left: var(--outer-margin);
+		padding-right: var(--outer-margin);
+		padding-top: spacing(2);
+		padding-bottom: spacing(2);
+		@include for-size(tablet-landscape-up) {
+			display: table-cell;
+			width: initial;
+			padding: 0 spacing(4);
+			vertical-align: middle;
+	    }
+	    > a:not(.ter-button) {
+			@include type-setting(-1,'normal');
+			color: $navbar-link-color;
+			margin: 0;
+			padding: 0;
+			text-decoration: none;
+			display: inline-block;
+			height: $navbar-height;
+			line-height: $navbar-height;
+			&:hover {
+				color: $navbar-link-hover;
+				text-decoration: none;
+			}
+			@include for-size(tablet-landscape-down) {
+				@include type-setting(0,'normal');
+				display: block;
+				line-height: initial;
+				height: auto;
+			}
+			.inverse-color & {
+				color: $navbar-inverse-link-color;
+				&:hover {
+					color: $navbar-inverse-link-hover-color;
+				}
+			}
+		}
+		&.ter-dropdown {
+			@include for-size(tablet-landscape-down) {
+				padding-left: var(--outer-margin);
+				padding-right: var(--outer-margin);
+				padding-top: spacing(2);
+				padding-bottom: spacing(2);
+			}
+			.ter-dropdown__menu {
+				@include for-size(tablet-landscape-down) {
+					box-shadow: unset;
+					background: transparent;
+				}
+				a {
+					@include for-size(tablet-landscape-down) {
+						@include type-setting(0,'normal');
+						color: $dropdown-link-color;
+						display: block;
+						line-height: initial;
+						height: auto;
+						padding-left: 0;
+						padding-right: 0;
+						&:hover {
+							@include for-size(tablet-landscape-down) {
+								color: $dropdown-link-color;
+								text-decoration: none;
+							}
+						}
+					}
+					.inverse-color & {
+						@include for-size(tablet-landscape-down) {
+							color: $navbar-inverse-link-color;
+							&:hover {
+								color: $navbar-inverse-link-hover-color;
+							}
+						}
+					}
+				}
+				@include for-size(tablet-landscape-down) {
+					position: unset;
+				    float: unset;
+				    display: none;
+				    visibility: visible;
+				    opacity: 1;
+				    border: 0px;
+				    background: transparent;
+				    border-radius: 0px;
+				    padding: 0;
+				    margin: 0;
+				}
+				.ter-dropdown__item--no-link {
+					@include for-size(tablet-landscape-down) {
+						padding-left: 0;
+						padding-right: 0;
+					}
+				}
+			}
+			&.is-open {
+				.ter-dropdown__menu {
+					@include for-size(tablet-landscape-down) {
+					    display: block;
+					}
+				}
+			}
+		}
+	}
+	&__form {
+		@include for-size(tablet-landscape-down) {
+		    padding: spacing(2) spacing(6);
+		}
+	}
+	&.is-hidden {
+		transform: translateY(-100%);
+	}
+}
+
+
+//
+// tree menu
+
+.tree-menu {
+	&__list {
+		margin: 0;
+		padding: 0 0 0 spacing(3);
+		list-style: none;
+	}
+	&__list-item {
+		@include type-setting(-1,'normal');
+		a,
+		a:visited,
+		a:active,
+		a:focus {
+			color: $tree-menu-link-color;
+			text-decoration: none;
+			&:hover {
+				color: $tree-menu-link-hover;
+				cursor: pointer;
+			}
+		}
+		&.is-active {
+			> a {
+				color: $tree-menu-link-hover;
+			}
+		}
+	}
+	&__list-item {
+		position: relative;
+		padding: 0 0 0 spacing(3);
+		> a {
+			@include border-radius('all','small');
+			padding: spacing(1) 0;
+			display: block;
+		}
+		> span {
+			padding: spacing(1) 0;
+		}
+		&.is-expandable {
+			&:before {
+				@include icon-base();
+				content: "\f054";
+				color: lighten($tree-menu-link-color, 10%);
+				position: absolute;
+				top: 1em;
+				left: calc(-1 * #{spacing(3)});
+				transition: transform 200ms ease-in-out;
+				font-size: 75%;
+			}
+			&.is-expanded {
+				> a {
+					color: $tree-menu-link-hover;
+				}
+				&:before {
+					transform: rotate(90deg);
+				}
+			}
+		}
+	}
+	&__sub-menu {
+		list-style: none;
+		margin-left: spacing(3);
+		padding: 0;
+		display: none;
+		> li {
+			@include type-setting(-1,'normal');
+			padding: 0;
+			a,
+			a:visited,
+			a:active,
+			a:focus {
+				color: $tree-menu-link-color;
+				text-decoration: none;
+				padding: spacing(1) 0;
+				display: block;
+				&:hover {
+					color: $tree-menu-link-hover;
+					cursor: pointer;
+				}
+			}
+			&.is-active {
+				> a {
+					color: $tree-menu-link-hover;
+				}
+			}
+		}
+	}
+}

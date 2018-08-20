@@ -1,0 +1,8 @@
+@each $name, $hex in $color-palette {
+    .bg-#{$name} {
+        background-color: $hex;
+    }
+}
+@mixin background-color($color) {
+  background-color: map-get($color-palette, $color);
+}
