@@ -1,3 +1,0 @@
-@function line-height($level) {
-  @return map-get($line-height, $level);
-}

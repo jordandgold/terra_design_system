@@ -137,105 +137,83 @@
   
 	'use strict';
 
-	var mainHeader = $('nav.navbar:not(.stay-put)'),
-		headerHeight = mainHeader.height();
-	
-	//set scrolling variables
+	var navBar = $('nav.ter-navbar'),
+		navBarAutoHide = $('nav.ter-navbar.js-auto-hide'),
+		navBarHeight = navBar.height(),
+		secondaryNav = $('nav.ter-secondary-navbar');
+
 	var scrolling = false,
 		previousTop = 0,
 		currentTop = 0,
-		scrollDelta = 10,
-		scrollOffset = 150;
+		scrollDelta = 20,
+		scrollOffset = 200;
 
-	mainHeader.on('click', '.nav-trigger', function(e){
-		// open primary navigation on mobile
+	navBar.on('click', '.ter-navbar__toggle', function(e){
 		e.preventDefault();
-		mainHeader.toggleClass('nav-open');
+		navBar.toggleClass('is-open');
+		$(this).toggleClass('is-active');
+    	$(this).parent().children('.ter-navbar__nav').slideToggle().toggleClass('is-expanded');
 	});
 
 	$(window).on('scroll', function(){
-		if( !scrolling ) {
+
+		if(!scrolling) {
+
 			scrolling = true;
+
 			(!window.requestAnimationFrame)
-				? setTimeout(autoHideHeader, 250)
-				: requestAnimationFrame(autoHideHeader);
+				? setTimeout(hideNavBar, 250)
+				: requestAnimationFrame(hideNavBar);
+
 		}
+
+		if(secondaryNav.length) {
+			showSecondaryNavBar();
+		}
+
 	});
 
 	$(window).on('resize', function(){
-		headerHeight = mainHeader.height();
+		navBarHeight = navBar.height();
 	});
 
-	function autoHideHeader() {
+	function hideNavBar() {
+
 		var currentTop = $(window).scrollTop();
 
-		( belowNavHeroContent.length > 0 ) 
-			? checkStickyNavigation(currentTop) // secondary navigation below intro
-			: checkSimpleNavigation(currentTop);
+		if (previousTop - currentTop > scrollDelta && !secondaryNav.length) {
+	    	// scrolling up
+	    	navBarAutoHide.removeClass('is-hidden');
+	    } else if (currentTop < scrollOffset && secondaryNav.length) {
+	    	// scrolling up
+	    	navBarAutoHide.removeClass('is-hidden');
+	    } else if ( currentTop - previousTop > scrollDelta && currentTop > scrollOffset) {
+	    	// scrolling down
+	    	navBarAutoHide.addClass('is-hidden');
+	    	navBarAutoHide.find('.ter-navbar__nav').find('.ter-dropdown.is-open').each(function(){
+	    		$(this).removeClass('is-open');
+	    	});
+	    }
 
 	   	previousTop = currentTop;
 		scrolling = false;
 	}
 
-	function checkSimpleNavigation(currentTop) {
-		//there's no secondary nav or secondary nav is below primary nav
-	    if (previousTop - currentTop > scrollDelta) {
-	    	//if scrolling up...
-	    	mainHeader.removeClass('is-hidden');
-	    } else if( currentTop - previousTop > scrollDelta && currentTop > scrollOffset) {
-	    	//if scrolling down...
-	    	mainHeader.addClass('is-hidden');
-	    	//close dropdowns
-	    	mainHeader.find('.navbar__nav').find('.dropdown.open').each(function(){
-	    		$(this).removeClass('open');
-	    	});
-	    }
+	function showSecondaryNavBar() {
+
+		var currentTop = $(window).scrollTop(),
+			trigger = secondaryNav.data('trigger'),
+			triggerTop = $(trigger).offset().top;
+
+		if (currentTop > triggerTop) {
+			secondaryNav.addClass('is-shown');
+		} else {
+			secondaryNav.removeClass('is-shown');
+		}
+
+		// console.log(currentTop, triggerTop);
+
 	}
-
-	function checkStickyNavigation(currentTop) {
-		//secondary nav below intro section - sticky secondary nav
-		var secondaryNavOffsetTop = belowNavHeroContent.offset().top - secondaryNavigation.height() - mainHeader.height();
-		
-		if (previousTop >= currentTop ) {
-	    	//if scrolling up... 
-	    	if( currentTop < secondaryNavOffsetTop ) {
-	    		//secondary nav is not fixed
-	    		mainHeader.removeClass('is-hidden');
-	    		secondaryNavigation.removeClass('fixed slide-up');
-	    		belowNavHeroContent.removeClass('secondary-nav-fixed');
-	    	} else if( previousTop - currentTop > scrollDelta ) {
-	    		//secondary nav is fixed
-	    		mainHeader.removeClass('is-hidden');
-	    		secondaryNavigation.removeClass('slide-up').addClass('fixed'); 
-	    		belowNavHeroContent.addClass('secondary-nav-fixed');
-	    	}
-	    	
-	    } else {
-	    	//if scrolling down...	
-	 	  	if( currentTop > secondaryNavOffsetTop + scrollOffset ) {
-	 	  		//hide primary nav
-	    		mainHeader.addClass('is-hidden');
-	    		secondaryNavigation.addClass('fixed slide-up');
-	    		belowNavHeroContent.addClass('secondary-nav-fixed');
-	    	} else if( currentTop > secondaryNavOffsetTop ) {
-	    		//once the secondary nav is fixed, do not hide primary nav if you haven't scrolled more than scrollOffset 
-	    		mainHeader.removeClass('is-hidden');
-	    		secondaryNavigation.addClass('fixed').removeClass('slide-up');
-	    		belowNavHeroContent.addClass('secondary-nav-fixed');
-	    	}
-
-	    }
-	}
-
-	/* This is for the Mobile Navbar Menu */
-    $('.navbar__toggle').click(function () {
-    	$(this).toggleClass("is-active");
-    	$(this).parent().children('.navbar__nav').slideToggle().toggleClass('is-expanded');
-    });
-
-	// $(".navbar__toggle").click(function(){
-	// 	$(this).toggleClass("is-active");
-	// });
 
 })(jQuery, window, document);
 /**
@@ -484,6 +462,42 @@
 })(jQuery, window, document);
 /**
  * Terra Design System
+ * tabs.js
+ */
+
+(function($, window, document){
+
+	'use strict';
+
+	var tabItems = $('.ter-tabs__nav a');
+
+	tabItems.on('click', function(event){
+
+		event.preventDefault();
+
+		var selectedItem = $(this);
+
+		if( !selectedItem.hasClass('is-active') ) {
+
+			var selectedTab = selectedItem.data('content'),
+				tabScope = selectedItem.parent().parent().parent().data('controls'),
+				tabContentWrapper = $(tabScope),
+				selectedContent = tabContentWrapper.find('li[data-content="'+selectedTab+'"]'),
+				slectedContentHeight = selectedContent.innerHeight();
+			
+			$('[data-controls="'+tabScope+'"]').find('a[data-content]').parent().removeClass('is-active');
+			selectedItem.parent().addClass('is-active');
+			selectedContent.addClass('is-active').siblings('li').removeClass('is-active');
+
+			tabContentWrapper.animate({
+				'height': slectedContentHeight
+			}, 200);
+		}
+	});
+
+})(jQuery, window, document);
+/**
+ * Terra Design System
  * terra.js
  */
 
@@ -505,9 +519,9 @@
   
 	'use strict';
 
-	$('.tree-menu__list li.is-expanded').find('ul').show();
+	$('.ter-tree-menu__list li.is-expanded').find('ul').show();
 
-    $('.tree-menu__list li.is-expandable > a').click(function () {
+    $('.ter-tree-menu__list li.is-expandable > a').click(function () {
     	if ($(this).parent().hasClass('is-expanded')) {
     		$(this).next('ul').slideToggle(200).parent().toggleClass('is-expanded');
     	} else {
